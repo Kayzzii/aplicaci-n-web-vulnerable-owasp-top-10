@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const A03_Injection: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [result, setResult] = useState('');
+    const [executedScript, setExecutedScript] = useState('');
 
     const handleSearch = () => {
         // VULNERABILIDAD: El término de búsqueda se incrusta directamente en la salida HTML sin sanitización.
         // Este es un ejemplo clásico de Cross-Site Scripting (XSS) basado en DOM.
-        setResult(`No se encontraron resultados para: <strong>${searchTerm}</strong>`);
+        const resultHtml = `No se encontraron resultados para: <strong>${searchTerm}</strong>`;
+        setResult(resultHtml);
+        
+        // Simular la ejecución de scripts maliciosos
+        if (searchTerm.includes('<script>')) {
+            const scriptMatch = searchTerm.match(/<script>(.*?)<\/script>/i);
+            if (scriptMatch && scriptMatch[1]) {
+                try {
+                    // PELIGROSO: Ejecutamos el script directamente
+                    eval(scriptMatch[1]);
+                    setExecutedScript(scriptMatch[1]);
+                } catch (e) {
+                    setExecutedScript(`Error ejecutando: ${scriptMatch[1]}`);
+                }
+            }
+        } else {
+            setExecutedScript('');
+        }
     };
 
     return (
@@ -36,8 +54,33 @@ const A03_Injection: React.FC = () => {
                         <h4 className="font-bold mb-2">Resultados de la Búsqueda:</h4>
                         {/* La parte peligrosa está aquí */}
                         <div dangerouslySetInnerHTML={{ __html: result }} />
+                        
+                        {executedScript && (
+                            <div className="mt-4 p-3 bg-red-900/50 border border-red-500 rounded">
+                                <h5 className="text-red-300 font-bold">⚠️ Script Ejecutado:</h5>
+                                <code className="text-red-200 text-sm">{executedScript}</code>
+                            </div>
+                        )}
                     </div>
                 )}
+                
+                <div className="mt-6 p-4 bg-gray-800 rounded border border-gray-600">
+                    <h4 className="font-bold mb-2 text-yellow-300">💡 Ejemplos de Payloads XSS:</h4>
+                    <div className="text-sm space-y-2">
+                        <div className="p-2 bg-gray-900 rounded font-mono text-green-300">
+                            &lt;script&gt;alert('¡XSS Funciona!')&lt;/script&gt;
+                        </div>
+                        <div className="p-2 bg-gray-900 rounded font-mono text-green-300">
+                            &lt;script&gt;document.body.style.backgroundColor='red'&lt;/script&gt;
+                        </div>
+                        <div className="p-2 bg-gray-900 rounded font-mono text-green-300">
+                            &lt;img src=x onerror="alert('¡Librería vulnerable explotada!')"&gt;
+                        </div>
+                        <div className="p-2 bg-gray-900 rounded font-mono text-green-300">
+                            &lt;script&gt;fetch('/admin/users').then(r=&gt;alert('Datos robados'))&lt;/script&gt;
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

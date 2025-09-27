@@ -14,6 +14,7 @@ import A07_IdentificationAndAuthenticationFailures from './pages/A07_Identificat
 import A08_SoftwareAndDataIntegrityFailures from './pages/A08_SoftwareAndDataIntegrityFailures';
 import A09_SecurityLoggingAndMonitoringFailures from './pages/A09_SecurityLoggingAndMonitoringFailures';
 import A10_ServerSideRequestForgery from './pages/A10_ServerSideRequestForgery';
+import CommandInjection from './pages/CommandInjection';
 
 export const AuthContext = React.createContext<AuthContextType | null>(null);
 
@@ -54,6 +55,7 @@ const App: React.FC = () => {
             case 'A08': return <A08_SoftwareAndDataIntegrityFailures />;
             case 'A09': return <A09_SecurityLoggingAndMonitoringFailures />;
             case 'A10': return <A10_ServerSideRequestForgery />;
+            case 'CMD': return <CommandInjection />;
             default: return <Welcome />;
         }
     };

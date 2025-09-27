@@ -11,4 +11,5 @@ export const OWASP_TOP_10: OwaspItem[] = [
     { id: 'A08', title: 'Fallas de Integridad de Software', category: 'A08:2021' },
     { id: 'A09', title: 'Fallas de Registro y Monitoreo', category: 'A09:2021' },
     { id: 'A10', title: 'Server-Side Request Forgery', category: 'A10:2021' },
+    { id: 'CMD', title: '💀 Command Injection (RCE)', category: 'EXTRA' },
 ];
