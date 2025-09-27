@@ -1,5 +1,5 @@
 <div align="center">
-<img width="800" height="400" alt="OWASP Top 10 Vulnerable Web App" src="Top10_Logo.png" />
+<img width="800" height="400" alt="OWASP Top 10 Vulnerable Web App" src="https://raw.githubusercontent.com/Kayzzii/aplicaci-n-web-vulnerable-owasp-top-10/main/Top10_Logo.png" />
 </div>
 
 # 🛡️ Aplicación Web Vulnerable - OWASP Top 10
