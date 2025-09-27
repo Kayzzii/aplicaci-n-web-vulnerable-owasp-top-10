@@ -1,0 +1,5 @@
+{
+  "name": "Aplicación Web Vulnerable OWASP Top 10",
+  "description": "Una aplicación web diseñada para demostrar las vulnerabilidades del Top 10 de OWASP de manera técnica y práctica para pentesting y educación en seguridad.",
+  "requestFramePermissions": []
+}
