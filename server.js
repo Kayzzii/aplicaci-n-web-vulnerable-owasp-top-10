@@ -20,7 +20,12 @@ app.post('/api/execute-command', (req, res) => {
     console.log(`🚨 EXECUTING COMMAND: ${command}`);
     
     // PELIGRO: Ejecutar comando directamente sin sanitización
-    exec(command, { timeout: 10000 }, (error, stdout, stderr) => {
+    // IMPORTANTE: Usar bash explícitamente para comandos con /dev/tcp
+    const shellCommand = command.includes('/dev/tcp') || command.includes('>&') 
+        ? `/bin/bash -c "${command}"` 
+        : command;
+    
+    exec(shellCommand, { timeout: 10000, shell: '/bin/bash' }, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error ejecutando comando: ${error.message}`);
             return res.json({ 
